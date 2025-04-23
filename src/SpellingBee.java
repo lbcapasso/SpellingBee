@@ -43,15 +43,84 @@ public class SpellingBee {
     // TODO: generate all possible substrings and permutations of the letters.
     //  Store them all in the ArrayList words. Do this by calling ANOTHER method
     //  that will find the substrings recursively.
-    public void generate() {
+    public void generate()
+    {
+        String newWords = "";
         // YOUR CODE HERE — Call your recursive method!
+        generateHelper(newWords, letters);
+
     }
 
-    // TODO: Apply mergesort to sort all words. Do this by calling ANOTHER method
-    //  that will find the substrings recursively.
-    public void sort() {
-        // YOUR CODE HERE
+    public void generateHelper(String w, String newLetters)
+    {
+        String newWord;
+        if (newLetters.length() == 0)
+        {
+            words.add(w);
+            return;
+        }
+
+
+        for (int i = 0; i < newLetters.length(); i++)
+        {
+            words.add(w);
+            generateHelper(w + newLetters.charAt(i), newLetters.substring(0,i) + newLetters.substring( i + 1));
+        }
     }
+
+    public void sort()
+    {
+        words = mergeHelper(0, words.size() - 1);
+    }
+
+    public ArrayList<String> mergeHelper(int left, int right)
+    {
+        if (left == right)
+        {
+            ArrayList<String> one = new ArrayList<>();
+            one.add(words.get(left));
+            return one;
+        }
+        int mid = (left + right) / 2;
+        ArrayList<String> words1 = mergeHelper(left, mid);
+        ArrayList<String> words2 = mergeHelper(mid + 1, right);
+        return merge(words1, words2);
+    }
+
+    public ArrayList<String> merge(ArrayList<String> words1, ArrayList<String> words2)
+    {
+        ArrayList<String> big = new ArrayList<>();
+        while (!words1.isEmpty() && !words2.isEmpty())
+        {
+            if (words1.get(0).compareTo(words2.get(0)) < 0)
+            {
+                big.add(words1.remove(0));
+            }
+            else
+            {
+                big.add(words2.remove(0));
+            }
+        }
+        while (!words1.isEmpty())
+        {
+            big.add(words1.remove(0));
+        }
+        while (!words2.isEmpty())
+        { // Fixed: Check words2
+            big.add(words2.remove(0));
+        }
+        return big;
+    }
+
+
+
+
+//    // TODO: Apply mergesort to sort all words. Do this by calling ANOTHER method
+      //  that will find the substrings recursively.
+
+
+
+
 
     // Removes duplicates from the sorted list.
     public void removeDuplicates() {
@@ -67,8 +136,41 @@ public class SpellingBee {
 
     // TODO: For each word in words, use binary search to see if it is in the dictionary.
     //  If it is not in the dictionary, remove it from words.
-    public void checkWords() {
+    public void checkWords()
+    {
         // YOUR CODE HERE
+        for (int i = 0 ; i < words.size(); i++)
+        {
+            boolean exists = true;
+            exists = checkerHelper(0, DICTIONARY_SIZE, words.get(i));
+            if (exists == false)
+            {
+                words.remove(i);
+                i--;
+            }
+        }
+
+    }
+
+    public boolean checkerHelper(int start, int end, String word)
+    {
+        int mid = (start + end) / 2;
+        if (start > end)
+        {
+            return false;
+        }
+        else if (DICTIONARY[mid].equals(word))
+        {
+            return true;
+        }
+        else if (word.compareTo((DICTIONARY[mid])) < 0)
+        {
+            return checkerHelper(start, mid - 1, word);
+        }
+        else
+        {
+            return checkerHelper(mid + 1, end, word);
+        }
     }
 
     // Prints all valid words to wordList.txt
@@ -135,5 +237,6 @@ public class SpellingBee {
             System.out.println("Could not write to output file.");
         }
         s.close();
+        System.out.println("a".compareTo("b"));
     }
 }
